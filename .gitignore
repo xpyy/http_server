@@ -1,0 +1,26 @@
+### Intellij ###
+*.iml
+.idea/
+*.ipr
+*.iws
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### Log4j ###
+*.log
+
+### Java ###
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+data/*.xml
