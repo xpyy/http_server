@@ -3,6 +3,7 @@ package main;
 import com.beust.jcommander.JCommander;
 import utils.argumentParser.Parser;
 import utils.files.FileReader;
+import utils.files.Type;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,6 +24,7 @@ public class Main {
             System.exit(2);
         }
 
+        Type.setType();
         FileReader.setFilesDir(parser.getRootDir());
 
         for (; ; ) {

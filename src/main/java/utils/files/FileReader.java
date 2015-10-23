@@ -6,9 +6,6 @@ import utils.exceptions.NotFound;
 import utils.exceptions.UnsupportedMediaType;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,18 +16,13 @@ public class FileReader {
     private static String filesDir;
 
     public static File readFile(String url) throws BadRequest, Forbidden, NotFound, UnsupportedMediaType {
-
+        url = filesDir + url;
         if (url.charAt(url.length() - 1) == '/') {
             url += DEFAULT_FILE;
         }
-        try {
-            path = Paths.get(new URL(url).toURI());
-        } catch (MalformedURLException e) {
-            throw new BadRequest("Malformed URL");
-        } catch (URISyntaxException e) {
-            throw new BadRequest("Something wrong in URL");
-        }
-        if (!path.normalize().startsWith(filesDir)) {
+        url = url.split("#|\\?")[0];
+        path = Paths.get(url);
+        if (!path.normalize().startsWith(Paths.get(filesDir).normalize())) {
             throw new BadRequest("Wrong way");
         }
         byte[] body;
@@ -43,6 +35,7 @@ public class FileReader {
                 throw new NotFound("No such file");
             }
         }
+
         return new File(getType(path.toString()), body);
     }
 
@@ -51,10 +44,6 @@ public class FileReader {
     }
 
     private static String getType(String path) throws UnsupportedMediaType {
-        try {
-            return Type.httpType.get(Enum.valueOf(Type.Types.class, path.substring(path.lastIndexOf('.') + 1, path.length()).toLowerCase()));
-        } catch (IllegalArgumentException e) {
-            throw new UnsupportedMediaType("Bad file type");
-        }
+        return Type.httpType.get(path.substring(path.lastIndexOf('.'), path.length()).toLowerCase());
     }
 }

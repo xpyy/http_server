@@ -38,7 +38,6 @@ public class Worker implements Runnable {
             createResponse(e);
             return;
         }
-
         try {
             file = FileReader.readFile(request.path);
         } catch (BadRequest e) {
@@ -62,7 +61,9 @@ public class Worker implements Runnable {
         String temp = null;
         try {
             temp = in.readLine();
-        } catch (IOException e) { /*todo*/ }
+        } catch (IOException e) {
+            System.out.println("IOException");
+        }
 
         if (temp == null) {
             throw new BadRequest("Empty request");
@@ -74,14 +75,14 @@ public class Worker implements Runnable {
             throw new WrongMethod("Wrong method");
         }
 
-        if (request.method != Methods.GET && request.method != Methods.HEAD) {
+        if (!request.method.equals(Methods.GET) && !request.method.equals(Methods.HEAD)) {
             throw new WrongMethod("Wrong not allowed");
         }
 
         try {
             request.path = URLDecoder.decode(temp.substring(temp.indexOf(' ') + 1, temp.lastIndexOf(' ')), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-
+            System.out.println("UnsupportedEncodingException");
         }
 
         request.version = temp.substring(temp.lastIndexOf(' ') + 1).toUpperCase();
@@ -95,7 +96,7 @@ public class Worker implements Runnable {
                 request.params.put(param[0], param[1]);
             }
         } catch (IOException e) {
-            //todo
+            System.out.println("IOException");
         }
     }
 
@@ -117,15 +118,15 @@ public class Worker implements Runnable {
                 .append(String.format("Connection: %s \r\n\r\n", response.connection)).toString().getBytes();
         try {
             out.write(headers);
-            if (request.method == Methods.GET) out.write(response.body);
+            if (request.method.equals(Methods.GET)) out.write(response.body);
+            out.close();
         } catch (IOException e) {
-            //todo
+
         }
     }
 
     private void createResponse(CustomException e) {
-        response.contentLength = e.getMessage().length();
-        response.type = Type.httpType.get(Type.Types.html);
+        response.type = Type.httpType.get(".html");
         response.body = e.getMessage().getBytes();
         sendResponse(e.getStatus());
     }
