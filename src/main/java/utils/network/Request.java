@@ -1,4 +1,6 @@
-package utils;
+package utils.network;
+
+import utils.enums.Methods;
 
 import java.util.HashMap;
 import java.util.Map;
