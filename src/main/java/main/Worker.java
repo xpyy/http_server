@@ -15,7 +15,6 @@ import java.net.URLDecoder;
 import java.time.ZoneId;
 
 public class Worker implements Runnable {
-    private Socket socket;
     private BufferedReader in;
     private OutputStream out;
     private Request request = new Request();
@@ -23,7 +22,6 @@ public class Worker implements Runnable {
     private File file;
 
     public Worker(Socket socket) throws IOException {
-        this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = socket.getOutputStream();
     }
@@ -120,6 +118,7 @@ public class Worker implements Runnable {
             out.write(headers);
             if (request.method.equals(Methods.GET)) out.write(response.body);
             out.close();
+            in.close();
         } catch (IOException e) {
 
         }
