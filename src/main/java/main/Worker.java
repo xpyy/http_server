@@ -29,30 +29,19 @@ public class Worker implements Runnable {
     public void run() {
         try {
             checkRequest();
-        } catch (WrongMethod e) {
-            createResponse(e);
-            return;
-        } catch (BadRequest e) {
+        } catch (WrongMethod | BadRequest e) {
             createResponse(e);
             return;
         }
         try {
             file = FileReader.readFile(request.path);
-        } catch (BadRequest e) {
-            createResponse(e);
-            return;
-        } catch (Forbidden e) {
-            createResponse(e);
-            return;
-        } catch (NotFound e) {
-            createResponse(e);
-            return;
-        } catch (UnsupportedMediaType e) {
+        } catch (BadRequest | Forbidden | NotFound | UnsupportedMediaType e) {
             createResponse(e);
             return;
         }
         createResponse(file);
         sendResponse(Status.OK);
+        Main.threadsCount.decrementAndGet();
     }
 
     private void checkRequest() throws WrongMethod, BadRequest {
@@ -119,8 +108,9 @@ public class Worker implements Runnable {
             if (request.method.equals(Methods.GET)) out.write(response.body);
             out.close();
             in.close();
+            Main.threadsCount.decrementAndGet();
         } catch (IOException e) {
-
+            Main.threadsCount.decrementAndGet();
         }
     }
 
