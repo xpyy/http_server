@@ -105,7 +105,7 @@ public class Worker implements Runnable {
                 .append(String.format("Connection: %s \r\n\r\n", response.connection)).toString().getBytes();
         try {
             out.write(headers);
-            if (request.method.equals(Methods.GET)) out.write(response.body);
+            if (request.method != null && request.method.equals(Methods.GET)) out.write(response.body);
             out.close();
             in.close();
             Main.threadsCount.decrementAndGet();
